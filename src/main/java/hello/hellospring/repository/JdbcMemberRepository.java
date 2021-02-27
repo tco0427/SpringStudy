@@ -30,7 +30,7 @@ public class JdbcMemberRepository implements MemberRepository{
             pstmt=conn.prepareStatement(sql,
                     Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1, member.getName());
-            pstmt.executeUpdate();
+            pstmt.executeUpdate();  //DB에 실제 쿼리가 이 때 날라감
             rs = pstmt.getGeneratedKeys();
             if (rs.next()) {
                 member.setId(rs.getLong(1));
@@ -130,9 +130,6 @@ public class JdbcMemberRepository implements MemberRepository{
         }
     }
 
-    private Connection getConnection(){
-        return DataSourceUtils.getConnection(dataSource);
-    }
     private void close(Connection conn,PreparedStatement pstmt, ResultSet rs){
         try{
             if(rs!=null){
@@ -141,6 +138,7 @@ public class JdbcMemberRepository implements MemberRepository{
         }catch(SQLException e){
             e.printStackTrace();
         }
+
         try{
             if(pstmt!=null){
                 pstmt.close();
@@ -148,6 +146,7 @@ public class JdbcMemberRepository implements MemberRepository{
         }catch(SQLException e){
             e.printStackTrace();
         }
+
         try{
             if(conn!=null){
                 close(conn);
@@ -155,6 +154,10 @@ public class JdbcMemberRepository implements MemberRepository{
         }catch(SQLException e){
             e.printStackTrace();
         }
+    }
+
+    private Connection getConnection(){
+        return DataSourceUtils.getConnection(dataSource);
     }
     private void close(Connection conn) throws SQLException{
         DataSourceUtils.releaseConnection(conn,dataSource);
